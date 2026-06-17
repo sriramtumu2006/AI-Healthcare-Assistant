@@ -3,6 +3,8 @@ import datetime
 from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import httpx
@@ -11,14 +13,22 @@ from app.database import engine, Base, get_db
 from app import models
 from app.routes import auth, profile, symptoms, doctors, appointments, records, dashboard
 from app.routes.auth import get_current_user, require_role, log_action
+from app.routes.auth import get_password_hash
 from app.routes.doctors import seed_doctors
 from app.routes.symptoms import scan_for_emergency
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = os.path.dirname(BASE_DIR)
+FRONTEND_DIR = os.path.join(PROJECT_DIR, "Frontend")
 
 app = FastAPI(
     title="AI Healthcare Assistant",
     description="Backend API for managing user profiles, medical records, appointments, symptoms analysis, and AI chat capabilities.",
     version="1.0.0"
 )
+
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/frontend", StaticFiles(directory=FRONTEND_DIR), name="frontend")
 
 # --- CORS Middleware ---
 app.add_middleware(
@@ -38,8 +48,46 @@ def startup_db_setup():
     db = next(get_db())
     try:
         seed_doctors(db)
+        seed_demo_users(db)
     finally:
         db.close()
+
+
+def seed_demo_users(db: Session):
+    demo_users = [
+        ("patient@healthai.test", "patient"),
+        ("alice.smith@hospital.com", "doctor"),
+        ("admin@healthai.test", "admin"),
+    ]
+
+    for email, role in demo_users:
+        existing_user = db.query(models.User).filter(models.User.email == email).first()
+        if existing_user:
+            continue
+
+        user = models.User(
+            email=email,
+            password=get_password_hash("Password123!"),
+            role=role,
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        if role == "patient":
+            profile = models.PatientProfile(
+                user_id=user.id,
+                name="Sarah Johnson",
+                date_of_birth="1994-04-18",
+                gender="Female",
+                height=165,
+                weight=62,
+                allergies="Pollen",
+                existing_conditions="None reported",
+            )
+            db.add(profile)
+            db.commit()
 
 # --- Include Routers ---
 app.include_router(auth.router)
@@ -49,6 +97,11 @@ app.include_router(doctors.router)
 app.include_router(appointments.router)
 app.include_router(records.router)
 app.include_router(dashboard.router)
+
+
+@app.get("/", include_in_schema=False)
+def open_frontend():
+    return RedirectResponse(url="/frontend/unified_login_flow/code.html")
 
 # --- Pydantic Schemas for Conversations & AI & Notifications ---
 class ConversationCreate(BaseModel):
