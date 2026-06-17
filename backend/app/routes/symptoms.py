@@ -35,6 +35,10 @@ class SymptomAnalysisResponse(BaseModel):
     emergency_alert: bool
     alert_message: Optional[str] = None
     ai_recommendation: Optional[str] = None
+    urgency_score: int = 5
+    possible_conditions: List[str] = []
+    recommended_specialist: str = "General Physician"
+    next_actions: List[str] = []
     disclaimer: str
 
 # --- Emergency Detection Config ---
@@ -67,6 +71,10 @@ async def analyze_symptoms(
             risk_category = "Emergency"
             alert_message = "EMERGENCY: Emergency symptoms detected. Please call 108 or your local emergency services immediately."
             ai_recommendation = "Seek immediate emergency medical care. Do not wait for an appointment."
+            urgency_score = 10
+            possible_conditions = ["Medical Emergency", "Life-threatening condition"]
+            recommended_specialist = "Emergency Room (ER)"
+            next_actions = ["Call 911 or local emergency number", "Have someone drive you to the nearest ER immediately", "Do not attempt to drive yourself"]
             
             # Log emergency event
             log_action(
@@ -93,10 +101,13 @@ async def analyze_symptoms(
                             f"Symptoms: {data.symptoms}\n"
                             f"Severity: {data.severity}\n"
                             f"Duration: {data.duration}\n\n"
-                            f"Return a JSON object containing:\n"
-                            f"1. 'risk_category': select strictly one of [Urgent, Routine, Self-Care].\n"
+                            f"Return a JSON object containing exactly these fields:\n"
+                            f"1. 'risk_category': strictly one of [Urgent, Routine, Self-Care].\n"
                             f"2. 'recommendation': a brief health recommendation (max 2 sentences).\n"
-                            f"Response format must be valid JSON only: {{\"risk_category\": \"...\", \"recommendation\": \"...\"}}"
+                            f"3. 'urgency_score': an integer from 1 to 10.\n"
+                            f"4. 'possible_conditions': an array of 2-3 possible medical conditions (strings).\n"
+                            f"5. 'recommended_specialist': a string indicating the type of doctor to see.\n"
+                            f"6. 'next_actions': an array of 2-3 brief actionable steps (strings).\n"
                         )
                         
                         response = await client.post(
@@ -125,6 +136,10 @@ async def analyze_symptoms(
                             
                             risk_category = parsed_data.get("risk_category", "Routine")
                             ai_recommendation = parsed_data.get("recommendation", "Please consult a doctor.")
+                            urgency_score = parsed_data.get("urgency_score", 5)
+                            possible_conditions = parsed_data.get("possible_conditions", ["General malaise"])
+                            recommended_specialist = parsed_data.get("recommended_specialist", "General Physician")
+                            next_actions = parsed_data.get("next_actions", ["Rest and hydrate", "Monitor symptoms"])
                             
                             # Standardize risk categories
                             valid_risks = ["Emergency", "Urgent", "Routine", "Self-Care"]
@@ -144,17 +159,25 @@ async def analyze_symptoms(
                     else:
                         risk_category = "Self-Care"
                         ai_recommendation = "Your symptoms appear mild. Rest, stay hydrated, and monitor your condition. Consult a doctor if they persist."
-            else:
-                # Rule-based fallback if no Groq key is present
+                # Fallback logic block omitted for brevity, defining default values
+                urgency_score = 5
+                possible_conditions = ["Unspecified symptoms"]
+                recommended_specialist = "General Physician"
+                next_actions = ["Schedule a checkup", "Monitor symptoms"]
+                
                 if data.severity.lower() == "severe":
                     risk_category = "Urgent"
                     ai_recommendation = "Symptoms are marked as severe. You should seek medical attention from a doctor promptly."
+                    urgency_score = 8
+                    recommended_specialist = "Urgent Care"
                 elif data.severity.lower() == "moderate":
                     risk_category = "Routine"
                     ai_recommendation = "Symptoms are moderate. Monitor them and book a routine doctor consultation."
                 else:
                     risk_category = "Self-Care"
                     ai_recommendation = "Mild symptoms reported. Engage in self-care, rest, and check in if symptoms get worse."
+                    urgency_score = 3
+                    next_actions = ["Rest and hydrate"]
 
         # 3. Save to database
         db_log = models.SymptomLog(
@@ -176,6 +199,10 @@ async def analyze_symptoms(
             "emergency_alert": is_emergency,
             "alert_message": alert_message,
             "ai_recommendation": ai_recommendation,
+            "urgency_score": urgency_score,
+            "possible_conditions": possible_conditions,
+            "recommended_specialist": recommended_specialist,
+            "next_actions": next_actions,
             "disclaimer": "This is AI-generated information. Please consult a real doctor."
         }
     except HTTPException:

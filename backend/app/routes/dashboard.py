@@ -86,13 +86,31 @@ async def get_dashboard(
     try:
         today_str = datetime.date.today().strftime("%Y-%m-%d")
 
-        # 1. Upcoming appointments (booked, today or future date)
-        # Note: In SQLite, simple string comparison "YYYY-MM-DD" works correctly for dates
-        appointments = db.query(models.Appointment).filter(
-            models.Appointment.patient_id == current_user.id,
-            models.Appointment.status == "booked",
-            models.Appointment.date >= today_str
-        ).order_by(models.Appointment.date.asc(), models.Appointment.time.asc()).all()
+        if current_user.role == "doctor":
+            # 1. Doctor appointments
+            doctor = db.query(models.Doctor).filter(models.Doctor.contact == current_user.email).first()
+            if not doctor:
+                appointments = []
+            else:
+                appointments = db.query(models.Appointment).filter(
+                    models.Appointment.doctor_id == doctor.id,
+                    models.Appointment.status == "booked",
+                    models.Appointment.date >= today_str
+                ).order_by(models.Appointment.date.asc(), models.Appointment.time.asc()).all()
+                
+            return {
+                "upcoming_appointments": appointments,
+                "recent_symptom_logs": [],
+                "medical_records": [],
+                "health_tip": "Review your patient charts before appointments today."
+            }
+        else:
+            # 1. Upcoming appointments (booked, today or future date)
+            appointments = db.query(models.Appointment).filter(
+                models.Appointment.patient_id == current_user.id,
+                models.Appointment.status == "booked",
+                models.Appointment.date >= today_str
+            ).order_by(models.Appointment.date.asc(), models.Appointment.time.asc()).all()
 
         # 2. Recent symptom logs (last 5 entries)
         symptoms = db.query(models.SymptomLog).filter(

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from app.database import get_db
 from app import models
-from app.routes.auth import get_current_user
+from app.routes.auth import get_current_user, get_password_hash
 
 router = APIRouter(prefix="/doctors", tags=["Doctors"])
 
@@ -71,6 +71,20 @@ def seed_doctors(db: Session):
         db.add_all(sample_doctors)
         db.commit()
         print("Doctor table successfully seeded with sample records.")
+        
+        # Seed matching User records for these doctors so they can log in
+        default_pwd = get_password_hash("password123")
+        for doc in sample_doctors:
+            existing_user = db.query(models.User).filter(models.User.email == doc.contact).first()
+            if not existing_user:
+                new_user = models.User(
+                    email=doc.contact,
+                    password=default_pwd,
+                    role="doctor"
+                )
+                db.add(new_user)
+        db.commit()
+        print("Doctor User credentials successfully seeded.")
 
 # --- Endpoints ---
 
