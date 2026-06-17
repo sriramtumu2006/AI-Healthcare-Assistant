@@ -432,7 +432,7 @@
         const textarea = document.querySelector('textarea');
         const thinking = document.getElementById('ai-thinking');
         const chatHistory = thinking.parentElement;
-        const sendBtn = document.querySelector('button .material-symbols-outlined:contains("send")')?.parentElement;
+        const sendBtn = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'send');
 
         if (textarea) {
             textarea.addEventListener('keydown', (e) => {
@@ -450,4 +450,6 @@
             });
         }
     </script>
+
+<script src='../shared/app.js'></script>
 </body></html>

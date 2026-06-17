@@ -48,10 +48,12 @@ cp .env.example .env
 
 ### 4. Run the development server
 ```bash
+cd backend
 uvicorn app.main:app --reload
 ```
 
 API docs available at: http://127.0.0.1:8000/docs
+Frontend available at: http://127.0.0.1:8000/
 
 ### 5. Run tests
 ```bash
