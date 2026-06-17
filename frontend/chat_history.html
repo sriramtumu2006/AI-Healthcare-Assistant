@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Health Assistant - Conversation History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#141c25",
+                    "surface-dim": "#cbdbf5",
+                    "primary-container": "#0052cc",
+                    "tertiary": "#004f20",
+                    "on-tertiary-container": "#5aef82",
+                    "on-primary-container": "#c4d2ff",
+                    "secondary-container": "#dbe3ef",
+                    "on-tertiary-fixed-variant": "#005321",
+                    "on-background": "#0b1c30",
+                    "inverse-on-surface": "#eaf1ff",
+                    "secondary-fixed-dim": "#bfc7d3",
+                    "tertiary-container": "#006a2d",
+                    "outline-variant": "#c3c6d6",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "background": "#f8f9ff",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#0b1c30",
+                    "primary": "#003d9b",
+                    "tertiary-fixed-dim": "#4ae176",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed": "#001848",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "on-tertiary-fixed": "#002109",
+                    "surface-container-highest": "#d3e4fe",
+                    "inverse-primary": "#b2c5ff",
+                    "primary-fixed": "#dae2ff",
+                    "surface-container-high": "#dce9ff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "on-secondary-container": "#5d656f",
+                    "on-primary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "on-secondary-fixed-variant": "#3f4851",
+                    "surface-variant": "#d3e4fe",
+                    "tertiary-fixed": "#6bff8f",
+                    "secondary-fixed": "#dbe3ef",
+                    "on-surface-variant": "#434654",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "surface-container": "#e5eeff",
+                    "on-secondary": "#ffffff",
+                    "outline": "#737685",
+                    "secondary": "#575f69",
+                    "inverse-surface": "#213145",
+                    "surface-tint": "#0c56d0",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "container-padding": "20px",
+                    "sm": "8px",
+                    "base": "4px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "stack-gap": "12px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "chat-text": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "chat-text": ["15px", {"lineHeight": "22px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .shadow-soft {
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .active-tab-glow {
+            position: relative;
+        }
+        .active-tab-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background-color: currentColor;
+            border-radius: 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface shadow-sm h-14 flex items-center px-container-padding">
+  <div class="flex items-center w-full justify-between">
+    <div class="flex items-center gap-4">
+      <a href="patient_dashboard.html" class="active:scale-95 transition-transform text-primary">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <h1 class="font-headline-md text-headline-md font-bold text-primary">Health Assistant</h1>
+    </div>
+    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-surface-tint flex items-center justify-center cursor-pointer">
+      <span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">person</span>
+    </div>
+  </div>
+</header>
+
+<main class="pt-20 pb-24 min-h-screen px-container-padding max-w-2xl mx-auto">
+  <!-- Search Section -->
+  <section class="mb-lg">
+    <div class="relative group">
+      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant transition-colors group-focus-within:text-primary">search</span>
+      <input class="w-full h-12 pl-12 pr-4 bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all text-body-lg" id="searchInput" placeholder="Search conversations..." type="text"/>
+    </div>
+  </section>
+
+  <!-- Filter Tabs -->
+  <nav class="flex gap-sm mb-md overflow-x-auto pb-2 no-scrollbar" id="filterTabs">
+    <button class="filter-tab px-md py-sm bg-primary-container text-white rounded-full font-label-md text-label-md whitespace-nowrap active:scale-95 transition-all" data-filter="all">All Chats</button>
+    <button class="filter-tab px-md py-sm bg-surface-container text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-all" data-filter="symptoms">Symptoms</button>
+    <button class="filter-tab px-md py-sm bg-surface-container text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-all" data-filter="medications">Medications</button>
+    <button class="filter-tab px-md py-sm bg-surface-container text-on-surface-variant rounded-full font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-all" data-filter="general">General</button>
+  </nav>
+
+  <!-- Conversation List -->
+  <div id="convList">
+    <p class="section-header font-label-md text-label-md text-on-surface-variant uppercase tracking-wider px-2 mb-sm">Today</p>
+
+    <!-- Item 1 -->
+    <a href="chat_assistant.html" class="conv-item block bg-surface-container-lowest p-md rounded-xl shadow-soft border border-transparent hover:border-primary/20 transition-all cursor-pointer group active:scale-[0.98] mb-md" data-category="symptoms">
+      <div class="flex gap-md">
+        <div class="w-1 bg-tertiary-container rounded-full shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start mb-xs">
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Persistent Knee Pain Analysis</h3>
+            <span class="text-label-md font-label-md text-on-surface-variant ml-2 shrink-0">10:45 AM</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"The sharp pain in your left knee when climbing stairs could be related to patellar tendonitis. I recommend icing the area and..."</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant self-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">chevron_right</span>
+      </div>
+    </a>
+
+    <!-- Item 2 -->
+    <a href="chat_assistant.html" class="conv-item block bg-surface-container-lowest p-md rounded-xl shadow-soft border border-transparent hover:border-primary/20 transition-all cursor-pointer group active:scale-[0.98] mb-md" data-category="medications">
+      <div class="flex gap-md">
+        <div class="w-1 bg-primary rounded-full shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start mb-xs">
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Daily Vitamin C Dosage</h3>
+            <span class="text-label-md font-label-md text-on-surface-variant ml-2 shrink-0">08:20 AM</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"Based on your recent lab results, a standard 500mg daily supplement is sufficient. Make sure to take it with meals for better..."</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant self-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">chevron_right</span>
+      </div>
+    </a>
+
+    <p class="section-header font-label-md text-label-md text-on-surface-variant uppercase tracking-wider px-2 mt-lg mb-sm">Yesterday</p>
+
+    <!-- Item 3 - Alert -->
+    <a href="chat_assistant.html" class="conv-item block bg-surface-container-lowest p-md rounded-xl shadow-soft border border-error/20 hover:border-error/40 transition-all cursor-pointer group active:scale-[0.98] mb-md" data-category="symptoms">
+      <div class="flex gap-md">
+        <div class="w-1 bg-error rounded-full shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start mb-xs">
+            <h3 class="font-headline-md text-headline-md text-error">Allergic Reaction Warning</h3>
+            <span class="text-label-md font-label-md text-on-surface-variant ml-2 shrink-0">Yesterday</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"URGENT: You mentioned a new rash after taking the prescribed antihistamine. This requires immediate attention from your doctor..."</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant self-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">chevron_right</span>
+      </div>
+    </a>
+
+    <!-- Item 4 -->
+    <a href="chat_assistant.html" class="conv-item block bg-surface-container-lowest p-md rounded-xl shadow-soft border border-transparent hover:border-primary/20 transition-all cursor-pointer group active:scale-[0.98] mb-md" data-category="general">
+      <div class="flex gap-md">
+        <div class="w-1 bg-secondary-fixed-dim rounded-full shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start mb-xs">
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Understanding Sleep Hygiene</h3>
+            <span class="text-label-md font-label-md text-on-surface-variant ml-2 shrink-0">Yesterday</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"Establishing a consistent wind-down routine can significantly improve REM sleep duration. Avoid blue light for 60 minutes..."</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant self-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">chevron_right</span>
+      </div>
+    </a>
+
+    <!-- Item 5 -->
+    <a href="chat_assistant.html" class="conv-item block bg-surface-container-lowest p-md rounded-xl shadow-soft border border-transparent hover:border-primary/20 transition-all cursor-pointer group active:scale-[0.98] mb-md" data-category="medications">
+      <div class="flex gap-md">
+        <div class="w-1 bg-secondary rounded-full shrink-0"></div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start mb-xs">
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Lisinopril Side Effects</h3>
+            <span class="text-label-md font-label-md text-on-surface-variant ml-2 shrink-0">2 days ago</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">"Dry cough is one of the most common side effects of ACE inhibitors like Lisinopril. If it's persistent, your doctor may switch you to..."</p>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant self-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">chevron_right</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Empty State -->
+  <div class="hidden flex-col items-center justify-center py-xl text-center" id="empty-state">
+    <div class="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-md">
+      <span class="material-symbols-outlined text-primary text-4xl">search_off</span>
+    </div>
+    <h3 class="font-headline-md text-headline-md text-on-surface mb-sm">No results found</h3>
+    <p class="font-body-md text-body-md text-on-surface-variant">Try searching with a different keyword or topic.</p>
+  </div>
+</main>
+
+<!-- FAB -->
+<a href="chat_assistant.html" class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-all z-40 hover:brightness-110">
+  <span class="material-symbols-outlined text-3xl">add</span>
+</a>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container-lowest shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] flex justify-around items-center h-20 px-4">
+  <a href="patient_dashboard.html" class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 p-2 rounded-xl transition-all duration-200">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span class="font-label-md text-label-md">Dashboard</span>
+  </a>
+  <button class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 p-2 rounded-xl transition-all duration-200">
+    <span class="material-symbols-outlined">monitor_heart</span>
+    <span class="font-label-md text-label-md">Vitals</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-primary font-bold p-2 rounded-xl transition-all duration-200">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+    <span class="font-label-md text-label-md">Chat</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 p-2 rounded-xl transition-all duration-200">
+    <span class="material-symbols-outlined">person</span>
+    <span class="font-label-md text-label-md">Profile</span>
+  </button>
+</nav>
+
+<script>
+  // Style definitions
+  const style = document.createElement('style');
+  style.textContent = `
+    body { background:#f8f9ff; font-family:'Inter',sans-serif; -webkit-tap-highlight-color:transparent; min-height:max(884px,100dvh); }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; user-select:none; }
+    .shadow-soft { box-shadow:0px 4px 12px rgba(0,0,0,0.05); }
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+  `;
+  document.head.appendChild(style);
+
+  // Search filter
+  const searchInput = document.getElementById('searchInput');
+  const convItems = document.querySelectorAll('.conv-item');
+  const sectionHeaders = document.querySelectorAll('.section-header');
+  const emptyState = document.getElementById('empty-state');
+
+  function filterItems() {
+    const query = searchInput.value.toLowerCase();
+    let visible = 0;
+    convItems.forEach(item => {
+      const match = item.textContent.toLowerCase().includes(query);
+      item.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    sectionHeaders.forEach(h => h.classList.toggle('hidden', query.length > 0));
+    emptyState.classList.toggle('hidden', visible > 0);
+    emptyState.classList.toggle('flex', visible === 0);
+  }
+  searchInput.addEventListener('input', filterItems);
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.filter-tab').forEach(t => {
+        t.classList.remove('bg-primary-container', 'text-white');
+        t.classList.add('bg-surface-container', 'text-on-surface-variant');
+      });
+      this.classList.add('bg-primary-container', 'text-white');
+      this.classList.remove('bg-surface-container', 'text-on-surface-variant');
+
+      const filter = this.dataset.filter;
+      let visible = 0;
+      convItems.forEach(item => {
+        const show = filter === 'all' || item.dataset.category === filter;
+        item.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      sectionHeaders.forEach(h => h.classList.toggle('hidden', filter !== 'all'));
+      emptyState.classList.toggle('hidden', visible > 0);
+      emptyState.classList.toggle('flex', visible === 0);
+    });
+  });
+</script>
+</body></html>

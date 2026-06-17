@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Health Assistant - AI Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-secondary-fixed": "#141c25", "surface-dim": "#cbdbf5",
+          "primary-container": "#0052cc", "tertiary": "#004f20",
+          "on-tertiary-container": "#5aef82", "on-primary-container": "#c4d2ff",
+          "secondary-container": "#dbe3ef", "on-tertiary-fixed-variant": "#005321",
+          "on-background": "#0b1c30", "inverse-on-surface": "#eaf1ff",
+          "secondary-fixed-dim": "#bfc7d3", "tertiary-container": "#006a2d",
+          "outline-variant": "#c3c6d6", "on-error-container": "#93000a",
+          "error": "#ba1a1a", "background": "#f8f9ff", "error-container": "#ffdad6",
+          "on-surface": "#0b1c30", "primary": "#003d9b", "tertiary-fixed-dim": "#4ae176",
+          "surface-container-lowest": "#ffffff", "on-primary-fixed": "#001848",
+          "on-primary-fixed-variant": "#0040a2", "on-tertiary-fixed": "#002109",
+          "surface-container-highest": "#d3e4fe", "inverse-primary": "#b2c5ff",
+          "primary-fixed": "#dae2ff", "surface-container-high": "#dce9ff",
+          "primary-fixed-dim": "#b2c5ff", "on-secondary-container": "#5d656f",
+          "on-primary": "#ffffff", "surface": "#f8f9ff",
+          "on-secondary-fixed-variant": "#3f4851", "surface-variant": "#d3e4fe",
+          "tertiary-fixed": "#6bff8f", "secondary-fixed": "#dbe3ef",
+          "on-surface-variant": "#434654", "on-error": "#ffffff",
+          "surface-bright": "#f8f9ff", "surface-container-low": "#eff4ff",
+          "surface-container": "#e5eeff", "on-secondary": "#ffffff",
+          "outline": "#737685", "secondary": "#575f69",
+          "inverse-surface": "#213145", "surface-tint": "#0c56d0",
+          "on-tertiary": "#ffffff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        spacing: {
+          xl: "32px", "container-padding": "20px", sm: "8px",
+          base: "4px", md: "16px", xs: "4px", lg: "24px", "stack-gap": "12px"
+        },
+        fontFamily: {
+          "body-md": ["Inter"], "headline-md": ["Inter"], "body-lg": ["Inter"],
+          "label-md": ["Inter"], "headline-lg": ["Inter"], "chat-text": ["Inter"]
+        },
+        fontSize: {
+          "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+          "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "600" }],
+          "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "chat-text": ["15px", { lineHeight: "22px", fontWeight: "400" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { min-height: max(884px, 100dvh); }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block; line-height: 1; text-transform: none;
+    letter-spacing: normal; word-wrap: normal; white-space: nowrap; direction: ltr;
+  }
+  .chat-container { overflow-y: auto; scrollbar-width: none; }
+  .chat-container::-webkit-scrollbar { display: none; }
+  .ai-bubble { background-color: #EBF3FF; border-radius: 16px 16px 16px 4px; }
+  .user-bubble { background-color: #0052CC; border-radius: 16px 16px 4px 16px; }
+  .typing-dot { animation: bounce 1.4s infinite ease-in-out both; }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+  .medical-disclaimer { backdrop-filter: blur(8px); background-color: rgba(248,249,255,0.9); }
+  .msg-enter { animation: msgIn 0.3s ease forwards; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-md">
+
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface shadow-sm flex items-center px-container-padding h-14">
+  <a href="patient_dashboard.html" class="mr-4 active:scale-95 transition-transform text-primary">
+    <span class="material-symbols-outlined">arrow_back</span>
+  </a>
+  <h1 class="font-headline-md text-headline-md font-bold text-primary">Health Assistant</h1>
+  <div class="ml-auto flex items-center gap-4">
+    <a href="chat_history.html" class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors" title="Chat History">
+      <span class="material-symbols-outlined">history</span>
+    </a>
+    <button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+      <span class="material-symbols-outlined">info</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="pt-14 pb-40 min-h-screen flex flex-col">
+  <!-- Disclaimer -->
+  <div class="medical-disclaimer sticky top-14 z-40 px-container-padding py-3 border-b border-outline-variant/20 flex items-start gap-3">
+    <span class="material-symbols-outlined text-error mt-0.5">warning</span>
+    <p class="text-label-md font-label-md text-on-surface-variant">
+      Disclaimer: This AI is for informational purposes and not a substitute for professional medical advice, diagnosis, or treatment.
+    </p>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-container flex-1 px-container-padding py-6 flex flex-col gap-6" id="chatWindow">
+    <!-- AI Message -->
+    <div class="flex flex-col items-start max-w-[85%]">
+      <div class="ai-bubble p-4 text-on-surface shadow-sm">
+        <p class="font-chat-text text-chat-text">Hello! I'm your health assistant. How can I help you today? You can ask me about symptoms, medication schedules, or general wellness advice.</p>
+      </div>
+      <span class="text-label-md font-label-md text-on-surface-variant mt-1 ml-1" id="init-time"></span>
+    </div>
+
+    <!-- User Message -->
+    <div class="flex flex-col items-end self-end max-w-[85%]">
+      <div class="user-bubble p-4 text-on-primary shadow-sm">
+        <p class="font-chat-text text-chat-text">I've been having a persistent headache since this morning. It's concentrated behind my eyes.</p>
+      </div>
+      <span class="text-label-md font-label-md text-on-surface-variant mt-1 mr-1">09:42 AM</span>
+    </div>
+
+    <!-- AI Response with List -->
+    <div class="flex flex-col items-start max-w-[85%]">
+      <div class="ai-bubble p-4 text-on-surface shadow-sm">
+        <p class="font-chat-text text-chat-text mb-2">I understand. Headaches behind the eyes can be caused by several factors. To help me narrow it down, could you tell me if you're also experiencing:</p>
+        <ul class="list-disc list-inside font-chat-text text-chat-text space-y-1">
+          <li>Sensitivity to light?</li>
+          <li>Nausea or dizziness?</li>
+          <li>Blurred vision?</li>
+          <li>Any neck stiffness?</li>
+        </ul>
+      </div>
+      <span class="text-label-md font-label-md text-on-surface-variant mt-1 ml-1">09:43 AM</span>
+    </div>
+
+    <!-- Suggestion Chips -->
+    <div class="flex flex-wrap gap-2 py-2" id="suggestion-chips">
+      <button onclick="sendChip(this)" class="chip bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-label-md font-label-md border border-outline-variant/30 transition-all active:scale-95">Light sensitivity</button>
+      <button onclick="sendChip(this)" class="chip bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-label-md font-label-md border border-outline-variant/30 transition-all active:scale-95">Just the headache</button>
+      <button onclick="sendChip(this)" class="chip bg-surface-container-low hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-label-md font-label-md border border-outline-variant/30 transition-all active:scale-95">Nausea</button>
+    </div>
+
+    <!-- Typing Indicator (Hidden by default) -->
+    <div class="flex flex-col items-start max-w-[85%] hidden" id="typingIndicator">
+      <div class="ai-bubble px-4 py-3 flex gap-1 shadow-sm">
+        <div class="typing-dot w-2 h-2 bg-secondary rounded-full"></div>
+        <div class="typing-dot w-2 h-2 bg-secondary rounded-full"></div>
+        <div class="typing-dot w-2 h-2 bg-secondary rounded-full"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Input Area -->
+<div class="fixed bottom-20 w-full bg-surface-container-lowest px-container-padding py-4 shadow-[0px_-4px_12px_rgba(0,0,0,0.05)] z-50">
+  <form id="chatForm" class="flex items-center gap-3 bg-surface-container-low rounded-xl px-4 py-2 border border-outline-variant/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+    <button type="button" class="text-secondary hover:text-primary transition-colors">
+      <span class="material-symbols-outlined">add_circle</span>
+    </button>
+    <textarea class="flex-1 bg-transparent border-none focus:ring-0 text-body-md font-body-md py-2 resize-none placeholder:text-on-surface-variant/50" id="msgInput" placeholder="Describe your symptoms..." rows="1"></textarea>
+    <button type="submit" class="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center active:scale-90 transition-transform shadow-sm shrink-0">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+    </button>
+  </form>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container-lowest flex justify-around items-center h-20 px-4 shadow-[0px_-4px_12px_rgba(0,0,0,0.05)]">
+  <a href="patient_dashboard.html" class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 active:scale-95 transition-all duration-200 p-2 rounded-xl">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span class="font-label-md text-label-md">Dashboard</span>
+  </a>
+  <button class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 active:scale-95 transition-all duration-200 p-2 rounded-xl">
+    <span class="material-symbols-outlined">monitor_heart</span>
+    <span class="font-label-md text-label-md">Vitals</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-primary font-bold hover:bg-secondary-container/50 active:scale-95 transition-all duration-200 p-2 rounded-xl">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+    <span class="font-label-md text-label-md">Chat</span>
+  </button>
+  <button class="flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/50 active:scale-95 transition-all duration-200 p-2 rounded-xl">
+    <span class="material-symbols-outlined">person</span>
+    <span class="font-label-md text-label-md">Profile</span>
+  </button>
+</nav>
+
+<script>
+  // Set initial time
+  const now = new Date();
+  document.getElementById('init-time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const chatWindow = document.getElementById('chatWindow');
+  const msgInput = document.getElementById('msgInput');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const suggestChips = document.getElementById('suggestion-chips');
+
+  function getTime() {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function scrollBottom() {
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'flex flex-col items-end self-end max-w-[85%] msg-enter';
+    div.innerHTML = `
+      <div class="user-bubble p-4 text-on-primary shadow-sm">
+        <p class="font-chat-text text-chat-text">${text}</p>
+      </div>
+      <span class="text-label-md font-label-md text-on-surface-variant mt-1 mr-1">${getTime()}</span>
+    `;
+    chatWindow.insertBefore(div, typingIndicator);
+    scrollBottom();
+  }
+
+  const aiResponses = [
+    "Thank you for sharing that. Based on what you've described, it could be tension headaches or eye strain. I'd recommend resting your eyes every 20 minutes, staying hydrated, and taking an over-the-counter pain reliever like ibuprofen. If it persists beyond 24 hours, consult your physician.",
+    "I understand. Monitoring these symptoms is important. Have you had this type of headache before? Are you under any unusual stress lately? These patterns can help determine the cause.",
+    "That's helpful context. For headaches concentrated behind the eyes, common causes include sinus pressure, dehydration, or prolonged screen time. Are you drinking enough water today?",
+    "I see. If you're experiencing light sensitivity along with your headache, this could indicate a migraine. I'd recommend resting in a dark, quiet room and taking your prescribed migraine medication if you have one. If this is your first time experiencing this, please consult a doctor."
+  ];
+  let aiIdx = 0;
+
+  function showAIResponse() {
+    typingIndicator.classList.remove('hidden');
+    scrollBottom();
+    setTimeout(() => {
+      typingIndicator.classList.add('hidden');
+      const text = aiResponses[aiIdx % aiResponses.length];
+      aiIdx++;
+      const div = document.createElement('div');
+      div.className = 'flex flex-col items-start max-w-[85%] msg-enter';
+      div.innerHTML = `
+        <div class="ai-bubble p-4 text-on-surface shadow-sm">
+          <p class="font-chat-text text-chat-text">${text}</p>
+        </div>
+        <span class="text-label-md font-label-md text-on-surface-variant mt-1 ml-1">${getTime()}</span>
+      `;
+      chatWindow.insertBefore(div, typingIndicator);
+      scrollBottom();
+    }, 1800);
+  }
+
+  function sendChip(btn) {
+    const text = btn.textContent.trim();
+    suggestChips.style.display = 'none';
+    addUserMessage(text);
+    showAIResponse();
+  }
+
+  document.getElementById('chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text) return;
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
+    suggestChips.style.display = 'none';
+    addUserMessage(text);
+    showAIResponse();
+  });
+
+  msgInput.addEventListener('input', function () {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    this.style.overflowY = this.scrollHeight > 120 ? 'auto' : 'hidden';
+  });
+
+  msgInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+  });
+
+  scrollBottom();
+</script>
+</body>
+</html>

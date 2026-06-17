@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Health Assistant - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-secondary-fixed": "#141c25", "surface-dim": "#cbdbf5",
+          "primary-container": "#0052cc", "tertiary": "#004f20",
+          "on-tertiary-container": "#5aef82", "on-primary-container": "#c4d2ff",
+          "secondary-container": "#dbe3ef", "on-tertiary-fixed-variant": "#005321",
+          "on-background": "#0b1c30", "inverse-on-surface": "#eaf1ff",
+          "secondary-fixed-dim": "#bfc7d3", "tertiary-container": "#006a2d",
+          "outline-variant": "#c3c6d6", "on-error-container": "#93000a",
+          "error": "#ba1a1a", "background": "#f8f9ff", "error-container": "#ffdad6",
+          "on-surface": "#0b1c30", "primary": "#003d9b", "tertiary-fixed-dim": "#4ae176",
+          "surface-container-lowest": "#ffffff", "on-primary-fixed": "#001848",
+          "on-primary-fixed-variant": "#0040a2", "on-tertiary-fixed": "#002109",
+          "surface-container-highest": "#d3e4fe", "inverse-primary": "#b2c5ff",
+          "primary-fixed": "#dae2ff", "surface-container-high": "#dce9ff",
+          "primary-fixed-dim": "#b2c5ff", "on-secondary-container": "#5d656f",
+          "on-primary": "#ffffff", "surface": "#f8f9ff",
+          "on-secondary-fixed-variant": "#3f4851", "surface-variant": "#d3e4fe",
+          "tertiary-fixed": "#6bff8f", "secondary-fixed": "#dbe3ef",
+          "on-surface-variant": "#434654", "on-error": "#ffffff",
+          "surface-bright": "#f8f9ff", "surface-container-low": "#eff4ff",
+          "surface-container": "#e5eeff", "on-secondary": "#ffffff",
+          "outline": "#737685", "secondary": "#575f69",
+          "inverse-surface": "#213145", "surface-tint": "#0c56d0",
+          "on-tertiary": "#ffffff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        spacing: {
+          xl: "32px", "container-padding": "20px", sm: "8px",
+          base: "4px", md: "16px", xs: "4px", lg: "24px", "stack-gap": "12px"
+        },
+        fontFamily: {
+          "body-md": ["Inter"], "headline-md": ["Inter"], "body-lg": ["Inter"],
+          "label-md": ["Inter"], "headline-lg": ["Inter"], "chat-text": ["Inter"]
+        },
+        fontSize: {
+          "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+          "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "600" }],
+          "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "chat-text": ["15px", { lineHeight: "22px", fontWeight: "400" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #f8f9ff; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; min-height: max(884px, 100dvh); }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .login-card { box-shadow: 0px 4px 12px rgba(0,0,0,0.05); }
+  .ambient-glow { background: radial-gradient(circle at 50% -20%, #EBF3FF 0%, transparent 60%); }
+  input:focus { outline: none !important; box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1); }
+  .error-msg { display: none; color: #ba1a1a; font-size: 12px; margin-top: 4px; }
+  .field-error input { border-color: #ba1a1a !important; }
+  .field-error .error-msg { display: block; }
+</style>
+</head>
+<body class="bg-background min-h-screen flex flex-col items-center justify-start overflow-x-hidden">
+<!-- Top AppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface flex items-center px-container-padding h-14 shadow-sm">
+  <div class="flex items-center gap-sm">
+    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+    <h1 class="font-headline-md text-headline-md font-bold text-primary">Health Assistant</h1>
+  </div>
+</header>
+
+<!-- Main Canvas -->
+<main class="w-full max-w-md px-container-padding pt-24 pb-12 flex flex-col ambient-glow min-h-screen">
+  <!-- Hero Section -->
+  <div class="mb-xl text-center">
+    <div class="inline-flex items-center justify-center p-md bg-secondary-container rounded-full mb-md">
+      <span class="material-symbols-outlined text-primary scale-125" style="font-variation-settings: 'FILL' 1;">lock_person</span>
+    </div>
+    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Welcome Back</h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant">Sign in to access your clinical dashboard</p>
+  </div>
+
+  <!-- Login Form -->
+  <div class="login-card bg-surface-container-lowest rounded-xl p-lg flex flex-col gap-lg border border-outline-variant/20">
+    <form class="flex flex-col gap-md" id="loginForm" novalidate>
+      <!-- Email/Mobile Field -->
+      <div class="flex flex-col gap-xs" id="identifierField">
+        <label class="font-label-md text-label-md text-on-surface-variant ml-base" for="identifier">Email or Mobile Number</label>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">alternate_email</span>
+          <input class="w-full h-12 pl-10 pr-md bg-surface-container border border-outline-variant rounded-lg font-body-md text-on-surface focus:border-primary transition-all" id="identifier" name="identifier" placeholder="name@example.com" type="text"/>
+        </div>
+        <span class="error-msg" id="identifierError">Please enter your email or mobile number.</span>
+      </div>
+
+      <!-- Password Field -->
+      <div class="flex flex-col gap-xs" id="passwordField">
+        <div class="flex justify-between items-center">
+          <label class="font-label-md text-label-md text-on-surface-variant ml-base" for="password">Password</label>
+          <a class="font-label-md text-label-md text-primary hover:underline" href="#">Forgot Password?</a>
+        </div>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+          <input class="w-full h-12 pl-10 pr-12 bg-surface-container border border-outline-variant rounded-lg font-body-md text-on-surface focus:border-primary transition-all" id="password" name="password" placeholder="••••••••" type="password"/>
+          <button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors active:scale-90" id="togglePassword" type="button">
+            <span class="material-symbols-outlined" id="eyeIcon">visibility</span>
+          </button>
+        </div>
+        <span class="error-msg" id="passwordError">Please enter your password.</span>
+      </div>
+
+      <!-- Login Button -->
+      <button class="mt-base h-12 w-full bg-primary text-on-primary font-label-md text-label-md rounded-lg flex items-center justify-center gap-sm active:scale-95 transition-all shadow-md" id="loginBtn" type="submit">
+        Login
+        <span class="material-symbols-outlined text-[18px]">login</span>
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-md">
+      <div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+      <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">or</span>
+      <div class="h-[1px] flex-1 bg-outline-variant/30"></div>
+    </div>
+
+    <!-- Register Link -->
+    <div class="text-center">
+      <p class="font-body-md text-body-md text-on-surface-variant">
+        Don't have an account?
+        <a class="text-primary font-bold hover:underline transition-all" href="registration.html">Register</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Security Badge -->
+  <div class="mt-xl flex flex-col items-center gap-sm opacity-60">
+    <div class="flex items-center gap-xs">
+      <span class="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
+      <span class="font-label-md text-label-md text-on-surface-variant">HIPAA Compliant &amp; Encrypted</span>
+    </div>
+  </div>
+</main>
+
+<!-- Background Texture -->
+<div class="fixed inset-0 -z-10 pointer-events-none opacity-[0.03]" style="background-image: radial-gradient(#003d9b 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
+
+<script>
+  // Password Toggle
+  document.getElementById('togglePassword').addEventListener('click', function () {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    icon.textContent = isPass ? 'visibility_off' : 'visibility';
+  });
+
+  // Form Validation & Submission
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    let valid = true;
+
+    const identifier = document.getElementById('identifier');
+    const password = document.getElementById('password');
+    const identifierField = document.getElementById('identifierField');
+    const passwordField = document.getElementById('passwordField');
+
+    // Reset
+    identifierField.classList.remove('field-error');
+    passwordField.classList.remove('field-error');
+
+    if (!identifier.value.trim()) {
+      identifierField.classList.add('field-error');
+      valid = false;
+    }
+    if (!password.value.trim()) {
+      passwordField.classList.add('field-error');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    const btn = this.querySelector('#loginBtn');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span>&nbsp;Authenticating...`;
+    btn.disabled = true;
+
+    setTimeout(() => {
+      // Simulate successful login → redirect to dashboard
+      window.location.href = 'patient_dashboard.html';
+    }, 1500);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Account Verification - Health Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-secondary-fixed": "#141c25", "surface-dim": "#cbdbf5",
+          "primary-container": "#0052cc", "tertiary": "#004f20",
+          "on-tertiary-container": "#5aef82", "on-primary-container": "#c4d2ff",
+          "secondary-container": "#dbe3ef", "on-tertiary-fixed-variant": "#005321",
+          "on-background": "#0b1c30", "inverse-on-surface": "#eaf1ff",
+          "secondary-fixed-dim": "#bfc7d3", "tertiary-container": "#006a2d",
+          "outline-variant": "#c3c6d6", "on-error-container": "#93000a",
+          "error": "#ba1a1a", "background": "#f8f9ff", "error-container": "#ffdad6",
+          "on-surface": "#0b1c30", "primary": "#003d9b", "tertiary-fixed-dim": "#4ae176",
+          "surface-container-lowest": "#ffffff", "on-primary-fixed": "#001848",
+          "on-primary-fixed-variant": "#0040a2", "on-tertiary-fixed": "#002109",
+          "surface-container-highest": "#d3e4fe", "inverse-primary": "#b2c5ff",
+          "primary-fixed": "#dae2ff", "surface-container-high": "#dce9ff",
+          "primary-fixed-dim": "#b2c5ff", "on-secondary-container": "#5d656f",
+          "on-primary": "#ffffff", "surface": "#f8f9ff",
+          "on-secondary-fixed-variant": "#3f4851", "surface-variant": "#d3e4fe",
+          "tertiary-fixed": "#6bff8f", "secondary-fixed": "#dbe3ef",
+          "on-surface-variant": "#434654", "on-error": "#ffffff",
+          "surface-bright": "#f8f9ff", "surface-container-low": "#eff4ff",
+          "surface-container": "#e5eeff", "on-secondary": "#ffffff",
+          "outline": "#737685", "secondary": "#575f69",
+          "inverse-surface": "#213145", "surface-tint": "#0c56d0",
+          "on-tertiary": "#ffffff"
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+        spacing: {
+          xl: "32px", "container-padding": "20px", sm: "8px",
+          base: "4px", md: "16px", xs: "4px", lg: "24px", "stack-gap": "12px"
+        },
+        fontFamily: {
+          "body-md": ["Inter"], "headline-md": ["Inter"], "body-lg": ["Inter"],
+          "label-md": ["Inter"], "headline-lg": ["Inter"], "chat-text": ["Inter"]
+        },
+        fontSize: {
+          "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+          "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "600" }],
+          "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "chat-text": ["15px", { lineHeight: "22px", fontWeight: "400" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { min-height: max(884px, 100dvh); }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .otp-input:focus { outline: none; border-color: #0052cc; box-shadow: 0 0 0 4px rgba(0,82,204,0.1); }
+  .pressed-state:active { transform: scale(0.98); transition: transform 0.1s ease; }
+  .resend-countdown { font-size: 12px; color: #737685; }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col items-center">
+
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface shadow-sm flex items-center px-container-padding h-14">
+  <button aria-label="Go back" class="active:scale-95 transition-transform p-2 -ml-2 rounded-full hover:bg-surface-container-low" onclick="window.location.href='registration.html'">
+    <span class="material-symbols-outlined text-primary">arrow_back</span>
+  </button>
+  <h1 class="font-headline-md text-headline-md font-bold text-primary ml-4">Health Assistant</h1>
+</header>
+
+<main class="w-full max-w-md px-container-padding pt-24 pb-12 flex flex-col flex-grow items-center">
+  <!-- Icon Section -->
+  <div class="mb-xl flex flex-col items-center text-center">
+    <div class="w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center mb-md shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+      <span class="material-symbols-outlined text-primary text-[40px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+    </div>
+    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Verify your account</h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant max-w-[280px]">
+      We've sent a 6-digit verification code to your registered mobile number.
+    </p>
+  </div>
+
+  <!-- OTP Form -->
+  <form class="w-full space-y-xl" id="otp-form">
+    <div class="flex justify-between gap-2 sm:gap-md" id="otp-container">
+      <input aria-label="Digit 1" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+      <input aria-label="Digit 2" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+      <input aria-label="Digit 3" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+      <input aria-label="Digit 4" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+      <input aria-label="Digit 5" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+      <input aria-label="Digit 6" class="otp-input w-12 h-14 text-center font-headline-md text-headline-md border border-outline-variant rounded-lg bg-surface-container-lowest transition-all" inputmode="numeric" maxlength="1" pattern="\d*" type="text"/>
+    </div>
+
+    <div class="space-y-md pt-md">
+      <button class="w-full h-12 bg-primary-container text-on-primary font-body-lg text-body-lg rounded-lg shadow-[0px_4px_12px_rgba(0,0,0,0.05)] pressed-state transition-all hover:bg-primary" id="verify-btn" type="submit">
+        Verify Account
+      </button>
+      <div class="text-center">
+        <p class="font-body-md text-body-md text-on-surface-variant">
+          Didn't receive the code?
+          <button class="text-primary font-label-md text-label-md hover:underline decoration-2 underline-offset-4 pressed-state ml-1" id="resend-btn" type="button">
+            Resend OTP
+          </button>
+        </p>
+        <p class="resend-countdown mt-1 hidden" id="countdown-text">Resend available in <span id="countdown">30</span>s</p>
+      </div>
+    </div>
+  </form>
+
+  <!-- Security Note -->
+  <div class="mt-auto pt-xl w-full">
+    <div class="bg-surface-container-low rounded-xl p-md border border-outline-variant/30 flex items-start gap-md">
+      <span class="material-symbols-outlined text-primary shrink-0">info</span>
+      <div class="space-y-xs">
+        <p class="font-label-md text-label-md text-on-surface">Security Note</p>
+        <p class="font-body-md text-body-md text-on-surface-variant leading-tight">
+          Our assistant ensures your health data remains private. This extra step helps verify your clinical identity.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast Notification -->
+<div class="fixed bottom-10 transform translate-y-20 opacity-0 transition-all duration-300 z-50 px-md py-sm bg-inverse-surface text-inverse-on-surface rounded-lg shadow-lg flex items-center gap-sm" id="toast">
+  <span class="material-symbols-outlined text-tertiary-fixed">check_circle</span>
+  <span class="font-label-md text-label-md">OTP Resent Successfully</span>
+</div>
+
+<script>
+  const inputs = document.querySelectorAll('#otp-container input');
+  const resendBtn = document.getElementById('resend-btn');
+  const toast = document.getElementById('toast');
+  const countdownText = document.getElementById('countdown-text');
+  const countdownSpan = document.getElementById('countdown');
+
+  // OTP Auto-focus Logic
+  inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = val;
+      if (val.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && index > 0) inputs[index - 1].focus();
+    });
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+      text.split('').forEach((char, i) => { if (inputs[index + i]) inputs[index + i].value = char; });
+      const nextEmpty = Array.from(inputs).findIndex(el => !el.value);
+      if (nextEmpty !== -1) inputs[nextEmpty].focus();
+    });
+  });
+
+  // Resend OTP with countdown
+  function startCountdown() {
+    resendBtn.disabled = true;
+    resendBtn.classList.add('opacity-40', 'cursor-not-allowed');
+    countdownText.classList.remove('hidden');
+    let secs = 30;
+    countdownSpan.textContent = secs;
+    const interval = setInterval(() => {
+      secs--;
+      countdownSpan.textContent = secs;
+      if (secs <= 0) {
+        clearInterval(interval);
+        resendBtn.disabled = false;
+        resendBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        countdownText.classList.add('hidden');
+      }
+    }, 1000);
+  }
+
+  resendBtn.addEventListener('click', () => {
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    inputs.forEach(input => input.value = '');
+    inputs[0].focus();
+    startCountdown();
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3000);
+  });
+
+  // Form Submit → redirect to onboarding
+  document.getElementById('otp-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const code = Array.from(inputs).map(i => i.value).join('');
+    if (code.length === 6) {
+      const btn = document.getElementById('verify-btn');
+      btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>';
+      btn.disabled = true;
+      setTimeout(() => {
+        window.location.href = 'onboarding.html';
+      }, 1500);
+    } else {
+      inputs.forEach(inp => {
+        inp.style.borderColor = '#ba1a1a';
+        setTimeout(() => inp.style.borderColor = '', 2000);
+      });
+    }
+  });
+</script>
+</body>
+</html>
